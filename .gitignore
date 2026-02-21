@@ -1,0 +1,39 @@
+# Configuration (contains sensitive credentials)
+includes/config.php
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Dependencies
+/vendor/
+
+# Cache
+/cache/
+*.cache
+
+# Temporary uploads
+/uploads/temp/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# IDE files (optional - keep sftp.json for team)
+# .vscode/
+
+# Backups
+*.bak
+*.backup
+*~

@@ -1,0 +1,286 @@
+================================================================================
+AHS2003.COM - DEVELOPMENT ENVIRONMENT SETUP GUIDE
+================================================================================
+
+This guide mirrors the Elk Journey setup for ahs2003.com
+Reference: elkjourney.org development environment
+
+================================================================================
+1. HOSTING SETUP (cPanel/Hostinger)
+================================================================================
+
+A. Create Hosting Account
+   - Log into Hostinger control panel
+   - Add new website: ahs2003.com
+   - Set up SSL certificate (Let's Encrypt)
+
+B. Create Development Subdomain
+   - Subdomain: development.ahs2003.com
+   - Document root: public_html/development.ahs2003.com
+   - Separate SSL for subdomain
+
+C. Create Databases
+   - Production DB: ahs2003
+   - Development DB: ahs2003_dev
+   - DB User: ahs2003_admin (same password for both)
+   - Grant all privileges to user on both databases
+
+D. Database Credentials (match Elk Journey pattern)
+   - Host: localhost
+   - Username: ahs2003_admin
+   - Password: [use same pattern as elkjourney]
+   - Production DB: ahs2003
+   - Development DB: ahs2003_dev
+
+================================================================================
+2. LOCAL DEVELOPMENT SETUP
+================================================================================
+
+A. Create Local Project Folder
+   - Z:\Programming\AHS2003\ahs2003
+   - Copy project structure from wandering-elk as template
+
+B. Git Setup
+
+   1. Initialize Git:
+      cd "Z:\Programming\AHS2003\ahs2003"
+      git init
+
+   2. Create .gitignore (copy from wandering-elk):
+      - includes/config.php
+      - *.log
+      - .env
+      - /vendor/
+      - .DS_Store
+      - Thumbs.db
+      - /cache/
+      - /uploads/temp/
+
+   3. Create GitHub Repository:
+      - Go to github.com/djmysticist
+      - New repository: ahs2003 (private)
+      - Don't initialize with README
+
+   4. Connect Local to GitHub:
+      git remote add origin https://github.com/djmysticist/ahs2003.git
+      git branch -M main
+      git add .
+      git commit -m "Initial commit"
+      git push -u origin main
+
+C. VS Code Setup
+   - Open folder in VS Code
+   - Install SFTP extension if not already
+   - Create .vscode/sftp.json for each environment
+
+================================================================================
+3. SFTP CONFIGURATION
+================================================================================
+
+A. Production SFTP (.vscode/sftp-production.json)
+   {
+       "name": "AHS2003 Production",
+       "host": "ftp.ahs2003.com",
+       "protocol": "sftp",
+       "port": 22,
+       "username": "[sftp username]",
+       "password": "[sftp password]",
+       "remotePath": "/public_html",
+       "uploadOnSave": false,
+       "ignore": [
+           ".vscode",
+           ".git",
+           ".gitignore",
+           "notes",
+           "*.md"
+       ]
+   }
+
+B. Development SFTP (.vscode/sftp-development.json)
+   {
+       "name": "AHS2003 Development",
+       "host": "ftp.ahs2003.com",
+       "protocol": "sftp",
+       "port": 22,
+       "username": "[sftp username]",
+       "password": "[sftp password]",
+       "remotePath": "/public_html/development.ahs2003.com",
+       "uploadOnSave": false
+   }
+
+================================================================================
+4. CONFIG.PHP SETUP
+================================================================================
+
+A. Create includes/config.example.php (tracked in Git)
+   - Template with placeholder values
+   - Copy structure from wandering-elk
+
+B. Create includes/config.php (NOT tracked - in .gitignore)
+
+   Local Config (for local testing if needed):
+   - ENVIRONMENT: 'development'
+   - DB_HOST: 'localhost'
+   - DB_NAME: 'ahs2003_dev'
+
+   Development Server Config:
+   - ENVIRONMENT: 'development'
+   - DB_NAME: 'ahs2003_dev'
+   - SITE_URL: 'https://development.ahs2003.com'
+
+   Production Server Config:
+   - ENVIRONMENT: 'production'
+   - DB_NAME: 'ahs2003'
+   - SITE_URL: 'https://ahs2003.com'
+
+C. Config Swap Workflow (same as Elk Journey):
+   1. Edit config.php locally to development settings
+   2. Upload to development.ahs2003.com
+   3. Test
+   4. Edit config.php locally to production settings
+   5. Upload to ahs2003.com
+   6. Git commit (config.php not included)
+
+================================================================================
+5. BREVO (EMAIL) SETUP
+================================================================================
+
+A. Create New Brevo Account
+   - Go to brevo.com
+   - Sign up with: [your email for this project]
+   - Verify email
+
+B. Configure Sender
+   - Add sender: noreply@ahs2003.com (or appropriate sender)
+   - Verify domain (add DNS records):
+     * DKIM record
+     * SPF record
+     * DMARC record (optional but recommended)
+
+C. Get API Credentials
+   - Go to SMTP & API > API Keys
+   - Create new API key
+   - Save the key securely
+
+D. SMTP Settings (for config.php)
+   - MAIL_USE_SMTP: true
+   - SMTP_HOST: 'smtp-relay.brevo.com'
+   - SMTP_PORT: 587
+   - SMTP_USER: [your Brevo email]
+   - SMTP_PASS: [your Brevo SMTP key]
+   - SMTP_FROM_EMAIL: 'noreply@ahs2003.com'
+   - SMTP_FROM_NAME: 'AHS 2003'
+
+E. DNS Records for Brevo (add in Hostinger DNS)
+   - Brevo provides these in the sender verification process
+   - TXT record for SPF
+   - TXT record for DKIM
+   - Wait for propagation (can take up to 48 hours)
+
+================================================================================
+6. CLOUDFLARE TURNSTILE (BOT PROTECTION)
+================================================================================
+
+A. Set Up Turnstile
+   - Go to cloudflare.com > Turnstile
+   - Add new site: ahs2003.com
+   - Choose widget type (managed recommended)
+
+B. Get Keys
+   - Site Key (public, goes in HTML)
+   - Secret Key (private, goes in config.php)
+
+C. Config Settings
+   - TURNSTILE_ENABLED: true
+   - TURNSTILE_SITE_KEY: '[site key]'
+   - TURNSTILE_SECRET_KEY: '[secret key]'
+
+================================================================================
+7. WORKFLOW SUMMARY
+================================================================================
+
+Daily Development Workflow:
+
+1. Make changes locally in VS Code
+
+2. Check what changed:
+   git status
+
+3. Upload to DEVELOPMENT first:
+   - Swap config.php to dev settings (Claude can help)
+   - SFTP upload changed files to development.ahs2003.com
+   - Swap config.php back to production settings
+
+4. Test on development.ahs2003.com
+
+5. If good, commit to Git:
+   git add .
+   git commit -m "Description of changes"
+   git push
+
+6. Upload to PRODUCTION:
+   - SFTP upload changed files to ahs2003.com
+   - Run any needed SQL on production database
+
+================================================================================
+8. CREDENTIALS REFERENCE
+================================================================================
+
+Keep these in a secure location (password manager):
+
+[ ] Hostinger Login
+[ ] cPanel Login
+[ ] FTP/SFTP Credentials
+[ ] Database Credentials (production)
+[ ] Database Credentials (development)
+[ ] GitHub Repository Access
+[ ] Brevo Account Login
+[ ] Brevo API Key
+[ ] Brevo SMTP Password
+[ ] Cloudflare Account Login
+[ ] Turnstile Site Key
+[ ] Turnstile Secret Key
+[ ] Admin Panel Password(s)
+
+================================================================================
+9. CHECKLIST
+================================================================================
+
+Initial Setup:
+[ ] Domain registered and pointing to hosting
+[ ] SSL certificates installed (production + dev)
+[ ] Production database created
+[ ] Development database created
+[ ] Database user created with access to both DBs
+[ ] Local project folder created
+[ ] Git initialized
+[ ] GitHub repository created (private)
+[ ] .gitignore configured
+[ ] Initial commit pushed
+[ ] SFTP configured in VS Code
+[ ] config.example.php created
+[ ] config.php created for each environment
+
+Email Setup:
+[ ] Brevo account created
+[ ] Sender email verified
+[ ] DNS records added (SPF, DKIM)
+[ ] DNS propagation confirmed
+[ ] Test email sent successfully
+
+Security:
+[ ] Turnstile account set up
+[ ] Turnstile keys added to config
+[ ] Test CAPTCHA working
+
+Final Verification:
+[ ] Development site loads
+[ ] Production site loads
+[ ] Database connection works
+[ ] Email sending works
+[ ] Forms protected by Turnstile
+[ ] Git workflow tested
+
+================================================================================
+END OF SETUP GUIDE
+================================================================================
