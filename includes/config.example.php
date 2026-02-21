@@ -22,9 +22,9 @@ define('ENVIRONMENT', 'development');
 // =============================================================================
 // SITE SETTINGS
 // =============================================================================
-define('SITE_NAME', 'AHS Class of 2003');
+define('SITE_NAME', 'AHS Class of 2003 Time Machine');
 define('SITE_URL', 'https://development.ahs2003.com'); // No trailing slash
-define('SITE_DESCRIPTION', 'Albany High School Class of 2003 Portal');
+define('SITE_DESCRIPTION', 'Step back. Reconnect. Remember.');
 
 // =============================================================================
 // DATABASE CONFIGURATION

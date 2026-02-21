@@ -1,6 +1,9 @@
 # Configuration (contains sensitive credentials)
 includes/config.php
 
+# Credentials folder - NEVER upload
+donotupload/
+
 # Environment files
 .env
 .env.local
