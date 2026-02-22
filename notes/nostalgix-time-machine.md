@@ -259,6 +259,23 @@ everyone ended up 20+ years later.
 
 ---
 
+## Content & Posting Features
+
+### GIFs
+- GIF support for posts/comments (essential 2003 energy)
+- Consider integrating Giphy/Tenor API for search
+- Or build a curated library of era-appropriate GIFs:
+  - Glittery text
+  - "Under Construction" banners
+  - Dancing baby
+  - AOL running man
+  - Flames, sparkles, hearts
+  - Emo/scene GIFs
+- Allow custom GIF uploads
+- Profile GIF decorations (like MySpace profiles had)
+
+---
+
 ## Implementation Ideas
 
 ### Login Experience
